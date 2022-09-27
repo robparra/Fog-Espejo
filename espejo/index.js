@@ -1,6 +1,7 @@
 import * as THREE from './threejs/three.module.js';
 import {OrbitControls} from './threejs/OrbitControls.js';
 import {GLTFLoader} from './threejs/GLTFLoader.js';
+import {Reflector} from './threejs/reflector.js'
 
 let scene, camera, renderer, container, clock, mixer, sphereCamera;
 
@@ -17,6 +18,7 @@ function init(){
     renderer = new THREE.WebGLRenderer({antialias:true});
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor( 0xffffff, 1);
     document.body.appendChild(renderer.domElement);
 
     container = document.getElementById("container");
@@ -38,9 +40,11 @@ function init(){
 
     // -->para efera reflectora
     reflejo();
+    // -->para piso reflector
+    reflector();
 
     // luces
-    var light4 = new THREE.DirectionalLight(0xf6e86d, 1);
+    var light4 = new THREE.DirectionalLight(0xffffff, 1);
     light4.castSahdow = true;
     light4.shadow.mapSize.width = 2048;
     light4.shadow.mapSize.height = 2048;
@@ -60,6 +64,26 @@ function init(){
     // -->para esfera reflectora
     render();
 
+    
+
+}
+
+function reflector(){
+    const mirrorOptions = {
+        clipBias:0.000,
+        textureWidth: window.innerWidth * window.devicePixelRatio,
+        textureHeight: window.innerHeight * window.devicePixelRatio,
+        color: 0x808080,
+        multisample: 4,
+    }
+    
+    const mirrorGeometry = new THREE.PlaneGeometry(20,50);
+    
+    const mirror = new Reflector(mirrorGeometry, mirrorOptions);
+    
+    mirror.rotateX(-Math.PI/2);
+    mirror.position.set(0,0,7);
+    scene.add(mirror)
 }
 
 function reflejo(){
